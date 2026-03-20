@@ -11,6 +11,8 @@ import repository.MesaRepository;
 import repository.PedidoRepository;
 import repository.ProdutoRepository;
 
+import java.util.List;
+
 public class PedidoService {
 
     private MesaRepository mesaRepository;
@@ -87,5 +89,24 @@ public class PedidoService {
 
         return novoItem;
     }
+
+    public List<ItemPedido> visualizarComanda(int numeroMesa){
+
+        Mesa mesa = mesaRepository.buscarPorNumero(numeroMesa);
+
+        if (mesa == null){
+            return null;
+        }
+
+        Pedido pedidoAtivo = pedidoRepository.buscarPedidoAtivoPorMesa(mesa.getId());
+
+            if (pedidoAtivo == null){
+                return null;
+            }
+
+            return itemPedidoRepository.listarPorPedidoId(pedidoAtivo.getId());
+    }
+
+
 }
 
