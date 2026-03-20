@@ -8,15 +8,15 @@ public class PedidoRepository {
 
     private List<Pedido> pedidos;
 
-    public PedidoRepository(){
+    public PedidoRepository() {
         this.pedidos = new ArrayList<>();
     }
 
-    public void salvar(Pedido pedido){
+    public void salvar(Pedido pedido) {
         pedidos.add(pedido);
     }
 
-    public List<Pedido> listarTodos(){
+    public List<Pedido> listarTodos() {
         return pedidos;
     }
 }
