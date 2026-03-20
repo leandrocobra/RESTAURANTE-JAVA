@@ -55,6 +55,12 @@ public class PedidoService {
 
     public ItemPedido adicionarItemAoPedido(int numeroMesa, int produtoId, int quantidade) {
 
+        Mesa mesa = mesaRepository.buscarPorNumero(numeroMesa);
+
+        if (mesa == null) {
+            return null;
+        }
+
         Pedido pedido = pedidoRepository.buscarPedidoAtivoPorMesa(
                 mesaRepository.buscarPorNumero(numeroMesa).getId());
 
@@ -90,21 +96,21 @@ public class PedidoService {
         return novoItem;
     }
 
-    public List<ItemPedido> visualizarComanda(int numeroMesa){
+    public List<ItemPedido> visualizarComanda(int numeroMesa) {
 
         Mesa mesa = mesaRepository.buscarPorNumero(numeroMesa);
 
-        if (mesa == null){
+        if (mesa == null) {
             return null;
         }
 
         Pedido pedidoAtivo = pedidoRepository.buscarPedidoAtivoPorMesa(mesa.getId());
 
-            if (pedidoAtivo == null){
-                return null;
-            }
+        if (pedidoAtivo == null) {
+            return null;
+        }
 
-            return itemPedidoRepository.listarPorPedidoId(pedidoAtivo.getId());
+        return itemPedidoRepository.listarPorPedidoId(pedidoAtivo.getId());
     }
 
 
