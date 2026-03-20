@@ -11,5 +11,13 @@ public class UsuarioRepository {
     public UsuarioRepository(){
         this.usuarios = new ArrayList<>();
     }
+
+    public void salvar(Usuario usuario){
+        usuarios.add(usuario);
+    }
+
+    public List<Usuario> listarTodos(){
+        return usuarios;
+    }
 }
 
