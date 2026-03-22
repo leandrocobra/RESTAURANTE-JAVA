@@ -53,7 +53,7 @@ public class PedidoService {
         return novoPedido;
     }
 
-    public ItemPedido adicionarItemAoPedido(int numeroMesa, int produtoId, int quantidade) {
+    public ItemPedido adicionarItem(int numeroMesa, int produtoId, int quantidade) {
 
         Mesa mesa = mesaRepository.buscarPorNumero(numeroMesa);
 
@@ -111,6 +111,31 @@ public class PedidoService {
         }
 
         return itemPedidoRepository.listarPorPedidoId(pedidoAtivo.getId());
+    }
+
+    public Pedido fecharPedido(int numeroMesa) {
+        Mesa mesa = mesaRepository.buscarPorNumero(numeroMesa);
+
+        if (mesa == null) {
+            return null;
+        }
+
+        Pedido pedidoAtivo = pedidoRepository.buscarPedidoAtivoPorMesa(numeroMesa);
+
+        if (pedidoAtivo == null) {
+            return null;
+        }
+
+        List<ItemPedido> itemPedidoEncontrado = new ItemPedidoRepository().listarPorPedidoId(pedidoAtivo.getId());
+
+        if (itemPedidoEncontrado == null || itemPedidoEncontrado.isEmpty()){
+            return null;
+        }
+
+        pedidoAtivo.setStatusPagamento(StatusPagamentoPedido.FECHADO);
+        mesa.setStatus(StatusMesa.AGUARDANDO_PAGAMENTO);
+
+        return pedidoAtivo;
     }
 
 
