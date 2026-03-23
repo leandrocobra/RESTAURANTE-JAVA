@@ -48,15 +48,9 @@ public class CaixaService {
             return 0;
         }
 
-        List<ItemPedido> itemPedidoEncontrado = itemPedidoRepository.listarPorPedidoId(pedidoId);
-        if (itemPedidoEncontrado == null || itemPedidoEncontrado.isEmpty()) {
-            return 0;
-        }
-
         double total = 0;
 
         List<ItemPedido> itensPedido = itemPedidoRepository.listarPorPedidoId(pedidoId);
-
         if (itensPedido == null || itensPedido.isEmpty()) {
             return 0;
         }

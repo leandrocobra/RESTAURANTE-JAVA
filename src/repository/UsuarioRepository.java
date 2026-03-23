@@ -1,6 +1,5 @@
 package repository;
 
-import model.Pedido;
 import model.Usuario;
 
 import java.util.ArrayList;

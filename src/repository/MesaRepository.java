@@ -1,7 +1,6 @@
 package repository;
 
 import model.Mesa;
-import model.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;

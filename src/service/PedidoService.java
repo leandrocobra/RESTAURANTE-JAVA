@@ -62,8 +62,7 @@ public class PedidoService {
             return null;
         }
 
-        Pedido pedido = pedidoRepository.buscarPedidoAtivoPorMesa(
-                mesaRepository.buscarPorNumero(numeroMesa).getId());
+        Pedido pedido = pedidoRepository.buscarPedidoAtivoPorMesa(mesa.getId());
 
         if (pedido == null) {
             return null;
