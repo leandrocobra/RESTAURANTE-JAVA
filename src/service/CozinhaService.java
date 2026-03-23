@@ -30,4 +30,64 @@ public class CozinhaService {
         }
         return pedidosStatusRecebido;
     }
+
+    public Pedido iniciarPreparo(int pedidoId){
+
+        Pedido pedido = pedidoRepository.buscarPorId(pedidoId);
+
+        if (pedido == null || pedido.getStatusPreparo() != StatusPreparoPedido.RECEBIDO){
+            return null;
+        }
+
+        pedido.setStatusPreparo(StatusPreparoPedido.EM_PREPARO);
+
+        return pedido;
+    }
+
+    public Pedido marcarPronto(int pedidoId){
+
+        Pedido pedido = pedidoRepository.buscarPorId(pedidoId);
+
+        if (pedido == null || pedido.getStatusPreparo() != StatusPreparoPedido.EM_PREPARO){
+            return null;
+        }
+
+        pedido.setStatusPreparo(StatusPreparoPedido.PRONTO);
+
+        return pedido;
+    }
+
+    public List<Pedido> listarPedidosEmPreparo() {
+        List<Pedido> todosPedidos = pedidoRepository.listarTodos();
+        List<Pedido> pedidosStatusEmPreparo = new ArrayList<>();
+
+        if (todosPedidos == null || todosPedidos.isEmpty()) {
+            return pedidosStatusEmPreparo;
+        }
+
+        for (Pedido pedido : todosPedidos) {
+            if (pedido.getStatusPreparo() == StatusPreparoPedido.EM_PREPARO) {
+                pedidosStatusEmPreparo.add(pedido);
+            }
+        }
+
+        return pedidosStatusEmPreparo;
+    }
+
+    public List<Pedido> listarPedidosProntos() {
+        List<Pedido> todosPedidos = pedidoRepository.listarTodos();
+        List<Pedido> pedidosStatusPronto = new ArrayList<>();
+
+        if (todosPedidos == null || todosPedidos.isEmpty()) {
+            return pedidosStatusPronto;
+        }
+
+        for (Pedido pedido : todosPedidos) {
+            if (pedido.getStatusPreparo() == StatusPreparoPedido.PRONTO) {
+                pedidosStatusPronto.add(pedido);
+            }
+        }
+
+        return pedidosStatusPronto;
+    }
 }
