@@ -1,7 +1,9 @@
 package service;
 
 import model.ItemPedido;
+import model.Mesa;
 import model.Pedido;
+import model.enums.StatusMesa;
 import model.enums.StatusPagamentoPedido;
 import repository.ItemPedidoRepository;
 import repository.MesaRepository;
@@ -66,5 +68,21 @@ public class CaixaService {
         return total;
     }
 
+    public Pedido pagarPedido (int pedidoId){
+        Pedido pedido = pedidoRepository.buscarPorId(pedidoId);
 
+        if (pedido == null || pedido.getStatusPagamento() != StatusPagamentoPedido.FECHADO){
+            return null;
+        }
+
+        Mesa mesa = mesaRepository.buscarPorId(pedido.getMesaId());
+        if (mesa == null || mesa.getStatus() != StatusMesa.AGUARDANDO_PAGAMENTO){
+            return null;
+        }
+
+        mesa.setStatus(StatusMesa.LIVRE);
+        pedido.setStatusPagamento(StatusPagamentoPedido.PAGO);
+
+        return pedido;
+    }
 }
