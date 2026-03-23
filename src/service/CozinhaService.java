@@ -57,6 +57,19 @@ public class CozinhaService {
         return pedido;
     }
 
+    public Pedido marcarEntregue(int pedidoId){
+
+        Pedido pedido = pedidoRepository.buscarPorId(pedidoId);
+
+        if (pedido == null || pedido.getStatusPreparo() != StatusPreparoPedido.PRONTO){
+            return null;
+        }
+
+        pedido.setStatusPreparo(StatusPreparoPedido.ENTREGUE);
+
+        return pedido;
+    }
+
     public List<Pedido> listarPedidosEmPreparo() {
         List<Pedido> todosPedidos = pedidoRepository.listarTodos();
         List<Pedido> pedidosStatusEmPreparo = new ArrayList<>();

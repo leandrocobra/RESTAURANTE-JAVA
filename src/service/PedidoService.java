@@ -6,6 +6,7 @@ import model.Pedido;
 import model.Produto;
 import model.enums.StatusMesa;
 import model.enums.StatusPagamentoPedido;
+import model.enums.StatusPreparoPedido;
 import repository.ItemPedidoRepository;
 import repository.MesaRepository;
 import repository.PedidoRepository;
@@ -116,13 +117,13 @@ public class PedidoService {
     public Pedido fecharPedido(int numeroMesa) {
         Mesa mesa = mesaRepository.buscarPorNumero(numeroMesa);
 
-        if (mesa == null) {
+        if (mesa == null || mesa.getStatus() != StatusMesa.OCUPADA) {
             return null;
         }
 
         Pedido pedidoAtivo = pedidoRepository.buscarPedidoAtivoPorMesa(mesa.getId());
 
-        if (pedidoAtivo == null) {
+        if (pedidoAtivo == null || pedidoAtivo.getStatusPreparo() != StatusPreparoPedido.ENTREGUE) {
             return null;
         }
 
