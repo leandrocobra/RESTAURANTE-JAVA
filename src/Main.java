@@ -8,6 +8,10 @@ import service.AutService;
 import service.CaixaService;
 import service.CozinhaService;
 import service.PedidoService;
+import ui.LoginUI;
+import ui.MenuConsole;
+
+import java.util.Scanner;
 
 public class Main {
 
@@ -40,5 +44,11 @@ public class Main {
         produtoRepository.salvar(new Produto(3, "Agua 500ml", 4.00));
         produtoRepository.salvar(new Produto(4, "Porção de batata", 10.00));
 
+        Scanner scanner = new Scanner(System.in);
+        LoginUI loginUI = new LoginUI(scanner, autService);
+
+        MenuConsole menuConsole = new MenuConsole(scanner, loginUI, caixaService, cozinhaService, pedidoService, mesaRepository, usuarioRepository, produtoRepository);
+
+        menuConsole.iniciar();
     }
 }
