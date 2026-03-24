@@ -1,4 +1,8 @@
 
+import model.Mesa;
+import model.Produto;
+import model.Usuario;
+import model.enums.PerfilUsuario;
 import repository.*;
 import service.AutService;
 import service.CaixaService;
@@ -19,5 +23,22 @@ public class Main {
         CozinhaService cozinhaService = new CozinhaService(pedidoRepository);
         PedidoService pedidoService = new PedidoService(mesaRepository, pedidoRepository,
                                                         produtoRepository, itemPedidoRepository);
+
+        mesaRepository.salvar(new Mesa(1, 1));
+        mesaRepository.salvar(new Mesa(2, 2));
+        mesaRepository.salvar(new Mesa(3, 3));
+        mesaRepository.salvar(new Mesa(4, 4));
+        mesaRepository.salvar(new Mesa(5, 5));
+
+        usuarioRepository.salvar(new Usuario(1, "adm", "adm", PerfilUsuario.ADM));
+        usuarioRepository.salvar(new Usuario(2, "garcom", "garcom", PerfilUsuario.GARCOM));
+        usuarioRepository.salvar(new Usuario(3, "cozinha", "cozinha", PerfilUsuario.COZINHA));
+        usuarioRepository.salvar(new Usuario(4, "caixa", "caixa", PerfilUsuario.CAIXA));
+
+        produtoRepository.salvar(new Produto(1, "Baguncinha", 17.50));
+        produtoRepository.salvar(new Produto(2, "Coca-Cola 1L", 7.50));
+        produtoRepository.salvar(new Produto(3, "Agua 500ml", 4.00));
+        produtoRepository.salvar(new Produto(4, "Porção de batata", 10.00));
+
     }
 }
