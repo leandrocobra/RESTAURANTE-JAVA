@@ -1,8 +1,6 @@
 package ui;
 
-import model.Mesa;
-import model.Pedido;
-import model.Usuario;
+import model.*;
 import model.enums.PerfilUsuario;
 import model.enums.StatusMesa;
 import repository.MesaRepository;
@@ -12,6 +10,7 @@ import service.CaixaService;
 import service.CozinhaService;
 import service.PedidoService;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class MenuConsole {
@@ -61,6 +60,7 @@ public class MenuConsole {
     private void menuAdm(){
         System.out.println("Menu ADM.");
     }
+
     private void menuGarcom(){
         int opcao;
         do {
@@ -77,22 +77,15 @@ public class MenuConsole {
 
             switch (opcao){
                 case 1 -> abrirPedidoUI();
-                case 2 -> System.out.println("2 - Adicionar item ao pedido.");
-                case 3 -> System.out.println("3 - Visualizar comanda.");
-                case 4 -> System.out.println("4 - Fechar pedido.");
+                case 2 -> adicionarItemAoPedidoUI();
+                case 3 -> visualizarComandaUI();
+                case 4 -> fecharPedidoUI();
                 case 0 -> System.out.println("Saindo do menu GARÇOM ...");
                 default -> System.out.println("Opção inválida!\n");
             }
 
         }while (opcao != 0);
 
-    }
-    private void menuCozinha(){
-        System.out.println("Menu COZINHA.");
-    }
-
-    private void menuCaixa(){
-        System.out.println("Menu CAIXA.");
     }
 
     private void abrirPedidoUI(){
@@ -117,4 +110,95 @@ public class MenuConsole {
             }
         }
     }
+
+    private void visualizarComandaUI() {
+        System.out.print("Informe o número da mesa: ");
+        int numeroMesa = scanner.nextInt();
+        scanner.nextLine();
+
+        List<ItemPedido> itensComanda = pedidoService.visualizarComanda(numeroMesa);
+
+        if (itensComanda == null || itensComanda.isEmpty()) {
+            System.out.println("Nenhuma comanda ativa encontrada para essa mesa.");
+            return;
+        }
+
+        double totalComanda = 0;
+
+        System.out.println("=== COMANDA DA MESA " + numeroMesa + " ===");
+
+        for (ItemPedido item : itensComanda) {
+            Produto produto = produtoRepository.buscarPorId(item.getProdutoId());
+            double subtotal = item.getQuantidade() * item.getPrecoUnitario();
+            totalComanda += subtotal;
+
+            System.out.println("Produto: " + produto.getNome());
+            System.out.println("Quantidade: " + item.getQuantidade());
+            System.out.println("Preço unitário: R$ " + item.getPrecoUnitario());
+            System.out.println("Subtotal: R$ " + subtotal);
+            System.out.println();
+        }
+        System.out.println("Total da comanda: R$ " + totalComanda);
+    }
+
+    private void fecharPedidoUI() {
+        System.out.print("Informe o número da mesa: ");
+        int numeroMesa = scanner.nextInt();
+        scanner.nextLine();
+
+        Pedido pedidoFechado = pedidoService.fecharPedido(numeroMesa);
+
+        if (pedidoFechado == null) {
+            System.out.println("Não foi possível fechar o pedido.");
+            System.out.println("Verifique se a mesa possui pedido ativo, itens e se o pedido já foi ENTREGUE.");
+        } else {
+            System.out.println("Pedido fechado com sucesso.");
+            System.out.println("Pedido ID: " + pedidoFechado.getId() + " | Mesa: " + numeroMesa);
+            System.out.println("Status pagamento: " + pedidoFechado.getStatusPagamento());
+        }
+    }
+
+    private void listarProdutos() {
+        System.out.println("=== PRODUTOS ===");
+        for (Produto produto : produtoRepository.listarTodos()) {
+            System.out.println(produto.getId() + " - " + produto.getNome() + " | R$ " + produto.getPreco());
+        }
+    }
+
+    private void adicionarItemAoPedidoUI() {
+        System.out.print("Informe o número da mesa: ");
+        int numeroMesa = scanner.nextInt();
+        scanner.nextLine();
+
+        listarProdutos();
+
+        System.out.print("Informe o ID do produto: ");
+        int produtoId = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Informe a quantidade: ");
+        int quantidade = scanner.nextInt();
+        scanner.nextLine();
+
+        ItemPedido itemPedido = pedidoService.adicionarItemAoPedido(numeroMesa, produtoId, quantidade);
+
+        if (itemPedido == null) {
+            System.out.println("Não foi possível adicionar o item ao pedido.");
+        } else {
+            System.out.println("Item adicionado com sucesso.");
+            System.out.println("Item ID: " + itemPedido.getId());
+            System.out.println("Produto ID: " + itemPedido.getProdutoId());
+            System.out.println("Quantidade: " + itemPedido.getQuantidade());
+        }
+    }
+
+    private void menuCozinha(){
+        System.out.println("Menu COZINHA.");
+    }
+
+    private void menuCaixa(){
+        System.out.println("Menu CAIXA.");
+    }
+
+
 }
