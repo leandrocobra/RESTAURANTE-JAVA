@@ -47,7 +47,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         LoginUI loginUI = new LoginUI(scanner, autService);
 
-        MenuConsole menuConsole = new MenuConsole(scanner, loginUI, caixaService, cozinhaService, pedidoService, mesaRepository, usuarioRepository, produtoRepository);
+        MenuConsole menuConsole = new MenuConsole(scanner, loginUI, caixaService, cozinhaService, pedidoService, mesaRepository, usuarioRepository, produtoRepository, itemPedidoRepository);
 
         menuConsole.iniciar();
     }

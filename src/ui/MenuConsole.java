@@ -3,6 +3,7 @@ package ui;
 import model.*;
 import model.enums.PerfilUsuario;
 import model.enums.StatusMesa;
+import repository.ItemPedidoRepository;
 import repository.MesaRepository;
 import repository.ProdutoRepository;
 import repository.UsuarioRepository;
@@ -22,11 +23,12 @@ public class MenuConsole {
     private MesaRepository mesaRepository;
     private UsuarioRepository usuarioRepository;
     private ProdutoRepository produtoRepository;
+    private ItemPedidoRepository itemPedidoRepository;
 
     public MenuConsole(Scanner scanner, LoginUI loginUI, CaixaService caixaService,
                        CozinhaService cozinhaService, PedidoService pedidoService,
                        MesaRepository mesaRepository, UsuarioRepository usuarioRepository,
-                       ProdutoRepository produtoRepository) {
+                       ProdutoRepository produtoRepository, ItemPedidoRepository itemPedidoRepository) {
         this.scanner = scanner;
         this.loginUI = loginUI;
         this.caixaService = caixaService;
@@ -35,6 +37,7 @@ public class MenuConsole {
         this.mesaRepository = mesaRepository;
         this.usuarioRepository = usuarioRepository;
         this.produtoRepository = produtoRepository;
+        this.itemPedidoRepository = itemPedidoRepository;
     }
 
     public void iniciar() {
@@ -192,13 +195,218 @@ public class MenuConsole {
         }
     }
 
-    private void menuCozinha(){
-        System.out.println("Menu COZINHA.");
+    private void menuCozinha() {
+        int opcao;
+
+        do {
+            System.out.println("=== MENU COZINHA ===");
+            System.out.println("1 - Listar pedidos recebidos");
+            System.out.println("2 - Iniciar preparo");
+            System.out.println("3 - Listar pedidos em preparo");
+            System.out.println("4 - Marcar pedido como pronto");
+            System.out.println("5 - Listar pedidos prontos");
+            System.out.println("6 - Marcar pedido como entregue");
+            System.out.println("0 - Sair");
+            System.out.print("Digite sua opção: ");
+
+            opcao = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcao) {
+                case 1 -> listarPedidosRecebidosUI();
+                case 2 -> iniciarPreparoUI();
+                case 3 -> listarPedidosEmPreparoUI();
+                case 4 -> marcarProntoUI();
+                case 5 -> listarPedidosProntosUI();
+                case 6 -> marcarEntregueUI();
+                case 0 -> System.out.println("Saindo do menu COZINHA...");
+                default -> System.out.println("Opção inválida!\n");
+            }
+
+        } while (opcao != 0);
+    }
+    private void exibirPedidoComItens(Pedido pedido) {
+        System.out.println("Pedido ID: " + pedido.getId());
+        System.out.println("Mesa ID: " + pedido.getMesaId());
+        System.out.println("Status preparo: " + pedido.getStatusPreparo());
+        System.out.println("Status pagamento: " + pedido.getStatusPagamento());
+        System.out.println("Itens:");
+
+        List<ItemPedido> itensPedido = itemPedidoRepository.listarPorPedidoId(pedido.getId());
+
+        if (itensPedido == null || itensPedido.isEmpty()) {
+            System.out.println("Nenhum item encontrado para este pedido.");
+        } else {
+            for (ItemPedido item : itensPedido) {
+                Produto produto = produtoRepository.buscarPorId(item.getProdutoId());
+
+                System.out.println("- " + produto.getNome() + " | Quantidade: " + item.getQuantidade());
+            }
+        }
+        System.out.println();
     }
 
-    private void menuCaixa(){
-        System.out.println("Menu CAIXA.");
+    private void listarPedidosRecebidosUI() {
+        List<Pedido> pedidosRecebidos = cozinhaService.listarPedidosRecebidos();
+
+        if (pedidosRecebidos == null || pedidosRecebidos.isEmpty()) {
+            System.out.println("Nenhum pedido recebido no momento.");
+            return;
+        }
+
+        System.out.println("=== PEDIDOS RECEBIDOS ===");
+        for (Pedido pedido : pedidosRecebidos) {
+            exibirPedidoComItens(pedido);
+        }
     }
 
+    private void iniciarPreparoUI() {
+        System.out.print("Informe o ID do pedido: ");
+        int pedidoId = scanner.nextInt();
+        scanner.nextLine();
+
+        Pedido pedido = cozinhaService.iniciarPreparo(pedidoId);
+
+        if (pedido == null) {
+            System.out.println("Não foi possível iniciar o preparo do pedido.");
+        } else {
+            System.out.println("Preparo iniciado com sucesso.");
+            System.out.println(
+                    "Pedido ID: " + pedido.getId() +
+                            " | Status preparo: " + pedido.getStatusPreparo()
+            );
+        }
+    }
+
+    private void listarPedidosEmPreparoUI() {
+        List<Pedido> pedidosEmPreparo = cozinhaService.listarPedidosEmPreparo();
+
+        if (pedidosEmPreparo == null || pedidosEmPreparo.isEmpty()) {
+            System.out.println("Nenhum pedido em preparo no momento.");
+            return;
+        }
+
+        System.out.println("=== PEDIDOS EM PREPARO ===");
+        for (Pedido pedido : pedidosEmPreparo) {
+            exibirPedidoComItens(pedido);
+        }
+    }
+
+    private void marcarProntoUI() {
+        System.out.print("Informe o ID do pedido: ");
+        int pedidoId = scanner.nextInt();
+        scanner.nextLine();
+
+        Pedido pedido = cozinhaService.marcarPronto(pedidoId);
+
+        if (pedido == null) {
+            System.out.println("Não foi possível marcar o pedido como pronto.");
+        } else {
+            System.out.println("Pedido marcado como pronto com sucesso.");
+            System.out.println(
+                    "Pedido ID: " + pedido.getId() +
+                            " | Status preparo: " + pedido.getStatusPreparo()
+            );
+        }
+    }
+
+    private void listarPedidosProntosUI() {
+        List<Pedido> pedidosProntos = cozinhaService.listarPedidosProntos();
+
+        if (pedidosProntos == null || pedidosProntos.isEmpty()) {
+            System.out.println("Nenhum pedido pronto no momento.");
+            return;
+        }
+
+        System.out.println("=== PEDIDOS PRONTOS ===");
+        for (Pedido pedido : pedidosProntos) {
+            exibirPedidoComItens(pedido);
+        }
+    }
+
+    private void marcarEntregueUI() {
+        System.out.print("Informe o ID do pedido: ");
+        int pedidoId = scanner.nextInt();
+        scanner.nextLine();
+
+        Pedido pedido = cozinhaService.marcarEntregue(pedidoId);
+
+        if (pedido == null) {
+            System.out.println("Não foi possível marcar o pedido como entregue.");
+        } else {
+            System.out.println("Pedido marcado como entregue com sucesso.");
+            System.out.println(
+                    "Pedido ID: " + pedido.getId() +
+                            " | Status preparo: " + pedido.getStatusPreparo()
+            );
+        }
+    }
+
+    private void menuCaixa() {
+        int opcao;
+
+        do {
+            System.out.println("=== MENU CAIXA ===");
+            System.out.println("1 - Listar pedidos aguardando pagamento");
+            System.out.println("2 - Pagar pedido");
+            System.out.println("0 - Sair");
+            System.out.print("Digite sua opção: ");
+
+            opcao = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcao) {
+                case 1 -> listarPedidosAguardandoPagamentoUI();
+                case 2 -> pagarPedidoUI();
+                case 0 -> System.out.println("Saindo do menu CAIXA...");
+                default -> System.out.println("Opção inválida!\n");
+            }
+
+        } while (opcao != 0);
+    }
+
+    private void listarPedidosAguardandoPagamentoUI() {
+        List<Pedido> pedidosAguardandoPagamento = caixaService.listarPedidosAguardandoPagamento();
+
+        if (pedidosAguardandoPagamento == null || pedidosAguardandoPagamento.isEmpty()) {
+            System.out.println("Nenhum pedido aguardando pagamento no momento.");
+            return;
+        }
+
+        System.out.println("=== PEDIDOS AGUARDANDO PAGAMENTO ===");
+        for (Pedido pedido : pedidosAguardandoPagamento) {
+            Mesa mesa = mesaRepository.buscarPorId(pedido.getMesaId());
+            int numeroMesa = (mesa != null) ? mesa.getNumero() : -1;
+
+            double totalPedido = caixaService.calcularTotalPedido(pedido.getId());
+
+            System.out.println(
+                    "Pedido ID: " + pedido.getId() +
+                            " | Mesa: " + (numeroMesa == -1 ? "Não encontrada" : numeroMesa) +
+                            " | Status pagamento: " + pedido.getStatusPagamento() +
+                            " | Total: R$ " + totalPedido
+            );
+        }
+    }
+
+    private void pagarPedidoUI() {
+        System.out.print("Informe o ID do pedido: ");
+        int pedidoId = scanner.nextInt();
+        scanner.nextLine();
+
+        Pedido pedidoPago = caixaService.pagarPedido(pedidoId);
+
+        if (pedidoPago == null) {
+            System.out.println("Não foi possível realizar o pagamento do pedido.");
+        } else {
+            Mesa mesa = mesaRepository.buscarPorId(pedidoPago.getMesaId());
+            String mesaInfo = (mesa != null) ? String.valueOf(mesa.getNumero()) : "Não encontrada";
+
+            System.out.println("Pagamento realizado com sucesso.");
+            System.out.println("Pedido ID: " + pedidoPago.getId());
+            System.out.println("Mesa: " + mesaInfo);
+            System.out.println("Status pagamento: " + pedidoPago.getStatusPagamento());
+        }
+    }
 
 }
