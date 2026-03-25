@@ -52,7 +52,7 @@ public class MenuConsole {
 
         PerfilUsuario perfilUsuario = usuarioLogado.getPerfil();
 
-        switch (perfilUsuario){
+        switch (perfilUsuario) {
             case ADM -> menuAdm();
             case GARCOM -> menuGarcom();
             case COZINHA -> menuCozinha();
@@ -60,11 +60,95 @@ public class MenuConsole {
         }
     }
 
-    private void menuAdm(){
-        System.out.println("Menu ADM.");
+    private void menuAdm() {
+        int opcao;
+
+        do {
+            System.out.println("=== MENU ADM ===");
+            System.out.println("1 - Listar mesas");
+            System.out.println("2 - Listar produtos");
+            System.out.println("3 - Listar usuários");
+            System.out.println("4 - Acessar menu GARÇOM");
+            System.out.println("5 - Acessar menu COZINHA");
+            System.out.println("6 - Acessar menu CAIXA");
+            System.out.println("0 - Sair");
+            System.out.print("Digite sua opção: ");
+
+            opcao = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcao) {
+                case 1 -> listarMesasUI();
+                case 2 -> listarProdutosUI();
+                case 3 -> listarUsuariosUI();
+                case 4 -> menuGarcom();
+                case 5 -> menuCozinha();
+                case 6 -> menuCaixa();
+                case 0 -> System.out.println("Saindo do menu ADM...");
+                default -> System.out.println("Opção inválida!\n");
+            }
+
+        } while (opcao != 0);
     }
 
-    private void menuGarcom(){
+    private void listarMesasUI() {
+        System.out.println("=== MESAS ===");
+
+        List<Mesa> mesas = mesaRepository.listarTodos();
+
+        if (mesas == null || mesas.isEmpty()) {
+            System.out.println("Nenhuma mesa cadastrada.");
+            return;
+        }
+
+        for (Mesa mesa : mesas) {
+            System.out.println(
+                    "ID: " + mesa.getId() +
+                            " | Número: " + mesa.getNumero() +
+                            " | Status: " + mesa.getStatus()
+            );
+        }
+    }
+
+    private void listarProdutosUI() {
+        System.out.println("=== PRODUTOS ===");
+
+        List<Produto> produtos = produtoRepository.listarTodos();
+
+        if (produtos == null || produtos.isEmpty()) {
+            System.out.println("Nenhum produto cadastrado.");
+            return;
+        }
+
+        for (Produto produto : produtos) {
+            System.out.println(
+                    "ID: " + produto.getId() +
+                            " | Nome: " + produto.getNome() +
+                            " | Preço: R$ " + produto.getPreco()
+            );
+        }
+    }
+
+    private void listarUsuariosUI() {
+        System.out.println("=== USUÁRIOS ===");
+
+        List<Usuario> usuarios = usuarioRepository.listarTodos();
+
+        if (usuarios == null || usuarios.isEmpty()) {
+            System.out.println("Nenhum usuário cadastrado.");
+            return;
+        }
+
+        for (Usuario usuario : usuarios) {
+            System.out.println(
+                    "ID: " + usuario.getId() +
+                            " | Login: " + usuario.getUsuario() +
+                            " | Perfil: " + usuario.getPerfil()
+            );
+        }
+    }
+
+    private void menuGarcom() {
         int opcao;
         do {
             System.out.println("===Menu GARÇOM.===");
@@ -78,7 +162,7 @@ public class MenuConsole {
             opcao = scanner.nextInt();
             scanner.nextLine();
 
-            switch (opcao){
+            switch (opcao) {
                 case 1 -> abrirPedidoUI();
                 case 2 -> adicionarItemAoPedidoUI();
                 case 3 -> visualizarComandaUI();
@@ -87,28 +171,28 @@ public class MenuConsole {
                 default -> System.out.println("Opção inválida!\n");
             }
 
-        }while (opcao != 0);
+        } while (opcao != 0);
 
     }
 
-    private void abrirPedidoUI(){
+    private void abrirPedidoUI() {
         listarMesasLivres();
         System.out.print("Informe o número da mesa: ");
         int numeroMesa = scanner.nextInt();
         scanner.nextLine();
 
         Pedido pedido = pedidoService.abrirPedido(numeroMesa);
-        if (pedido == null){
+        if (pedido == null) {
             System.out.println("Não foi possivel abrir o pedido");
-        }else {
+        } else {
             System.out.println("Pedido aberto com sucesso:");
             System.out.println("Pedido ID:" + pedido.getId() + "Mesa: " + numeroMesa);
         }
     }
 
-    private void listarMesasLivres(){
-        for (Mesa mesa : mesaRepository.listarTodos()){
-            if (mesa.getStatus() == StatusMesa.LIVRE){
+    private void listarMesasLivres() {
+        for (Mesa mesa : mesaRepository.listarTodos()) {
+            if (mesa.getStatus() == StatusMesa.LIVRE) {
                 System.out.println("Mesa " + mesa.getNumero());
             }
         }
@@ -225,6 +309,7 @@ public class MenuConsole {
 
         } while (opcao != 0);
     }
+
     private void exibirPedidoComItens(Pedido pedido) {
         System.out.println("Pedido ID: " + pedido.getId());
         System.out.println("Mesa ID: " + pedido.getMesaId());
