@@ -186,7 +186,7 @@ public class MenuConsole {
             System.out.println("Não foi possivel abrir o pedido");
         } else {
             System.out.println("Pedido aberto com sucesso:");
-            System.out.println("Pedido ID:" + pedido.getId() + "Mesa: " + numeroMesa);
+            System.out.println("Pedido ID:" + pedido.getId() + " | Mesa: " + numeroMesa);
         }
     }
 
