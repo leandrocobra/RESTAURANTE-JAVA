@@ -5,7 +5,7 @@ import repository.ProdutoRepository;
 
 import java.util.List;
 
-public class TesteProdutoRepository {
+public class TestaProdutoRepository {
     public static void main(String[] args) {
         ProdutoRepository produtoRepository = new ProdutoRepository();
 
