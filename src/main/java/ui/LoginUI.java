@@ -2,6 +2,7 @@ package ui;
 
 import model.Usuario;
 import service.AutService;
+
 import java.util.Scanner;
 
 public class LoginUI {
@@ -13,11 +14,15 @@ public class LoginUI {
         this.autService = autService;
     }
 
-    public Usuario fazerLogin(){
+    public Usuario fazerLogin() {
+        System.out.println();
+        System.out.println("=== LOGIN ===");
         System.out.print("Usuário: ");
         String usuario = scanner.nextLine();
+
         System.out.print("Senha: ");
         String senha = scanner.nextLine();
+
         return autService.autenticar(usuario, senha);
     }
 }
