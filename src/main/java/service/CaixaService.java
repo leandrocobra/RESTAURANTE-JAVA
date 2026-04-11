@@ -42,8 +42,8 @@ public class CaixaService {
     }
 
     public double calcularTotalPedido(int pedidoId) {
-
         Pedido pedido = pedidoRepository.buscarPorId(pedidoId);
+
         if (pedido == null) {
             return 0;
         }
@@ -51,31 +51,36 @@ public class CaixaService {
         double total = 0;
 
         List<ItemPedido> itensPedido = itemPedidoRepository.listarPorPedidoId(pedidoId);
+
         if (itensPedido == null || itensPedido.isEmpty()) {
             return 0;
         }
 
         for (ItemPedido itemPedido : itensPedido) {
-            total = total + (itemPedido.getQuantidade() * itemPedido.getPrecoUnitario());
+            total += itemPedido.getQuantidade() * itemPedido.getPrecoUnitario();
         }
 
         return total;
     }
 
-    public Pedido pagarPedido (int pedidoId){
+    public Pedido pagarPedido(int pedidoId) {
         Pedido pedido = pedidoRepository.buscarPorId(pedidoId);
 
-        if (pedido == null || pedido.getStatusPagamento() != StatusPagamentoPedido.FECHADO){
+        if (pedido == null || pedido.getStatusPagamento() != StatusPagamentoPedido.FECHADO) {
             return null;
         }
 
         Mesa mesa = mesaRepository.buscarPorId(pedido.getMesaId());
-        if (mesa == null || mesa.getStatus() != StatusMesa.AGUARDANDO_PAGAMENTO){
+
+        if (mesa == null || mesa.getStatus() != StatusMesa.AGUARDANDO_PAGAMENTO) {
             return null;
         }
 
-        mesa.setStatus(StatusMesa.LIVRE);
+        pedidoRepository.atualizarStatusPagamento(pedidoId, StatusPagamentoPedido.PAGO);
+        mesaRepository.atualizarStatus(mesa.getId(), StatusMesa.LIVRE);
+
         pedido.setStatusPagamento(StatusPagamentoPedido.PAGO);
+        mesa.setStatus(StatusMesa.LIVRE);
 
         return pedido;
     }

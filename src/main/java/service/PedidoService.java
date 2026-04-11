@@ -46,16 +46,16 @@ public class PedidoService {
             return null;
         }
 
-        int novoId = pedidoRepository.listarTodos().size() + 1;
-        Pedido novoPedido = new Pedido(novoId, mesa.getId());
-        mesa.setStatus(StatusMesa.OCUPADA);
+        Pedido novoPedido = new Pedido(0, mesa.getId());
         pedidoRepository.salvar(novoPedido);
+
+        mesaRepository.atualizarStatus(mesa.getId(), StatusMesa.OCUPADA);
+        mesa.setStatus(StatusMesa.OCUPADA);
 
         return novoPedido;
     }
 
     public ItemPedido adicionarItemAoPedido(int numeroMesa, int produtoId, int quantidade) {
-
         Mesa mesa = mesaRepository.buscarPorNumero(numeroMesa);
 
         if (mesa == null) {
@@ -78,7 +78,7 @@ public class PedidoService {
             return null;
         }
 
-        if ((!produto.isAtivo())) {
+        if (!produto.isAtivo()) {
             return null;
         }
 
@@ -86,10 +86,13 @@ public class PedidoService {
             return null;
         }
 
-        int novoId = itemPedidoRepository.listarTodos().size() + 1;
-
-        ItemPedido novoItem = new ItemPedido(novoId, pedido.getId(), produto.getId(),
-                quantidade, produto.getPreco());
+        ItemPedido novoItem = new ItemPedido(
+                0,
+                pedido.getId(),
+                produto.getId(),
+                quantidade,
+                produto.getPreco()
+        );
 
         itemPedidoRepository.salvar(novoItem);
 
@@ -97,7 +100,6 @@ public class PedidoService {
     }
 
     public List<ItemPedido> visualizarComanda(int numeroMesa) {
-
         Mesa mesa = mesaRepository.buscarPorNumero(numeroMesa);
 
         if (mesa == null) {
@@ -126,18 +128,18 @@ public class PedidoService {
             return null;
         }
 
-        List<ItemPedido> itemPedidoEncontrado = itemPedidoRepository.listarPorPedidoId(pedidoAtivo.getId());
+        List<ItemPedido> itensPedido = itemPedidoRepository.listarPorPedidoId(pedidoAtivo.getId());
 
-        if (itemPedidoEncontrado == null || itemPedidoEncontrado.isEmpty()){
+        if (itensPedido == null || itensPedido.isEmpty()) {
             return null;
         }
+
+        pedidoRepository.atualizarStatusPagamento(pedidoAtivo.getId(), StatusPagamentoPedido.FECHADO);
+        mesaRepository.atualizarStatus(mesa.getId(), StatusMesa.AGUARDANDO_PAGAMENTO);
 
         pedidoAtivo.setStatusPagamento(StatusPagamentoPedido.FECHADO);
         mesa.setStatus(StatusMesa.AGUARDANDO_PAGAMENTO);
 
         return pedidoAtivo;
     }
-
-
 }
-

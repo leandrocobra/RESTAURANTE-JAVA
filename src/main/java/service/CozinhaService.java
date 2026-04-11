@@ -14,8 +14,7 @@ public class CozinhaService {
         this.pedidoRepository = pedidoRepository;
     }
 
-    public List<Pedido> listarPedidosRecebidos(){
-
+    public List<Pedido> listarPedidosRecebidos() {
         List<Pedido> todosPedidos = pedidoRepository.listarTodos();
         List<Pedido> pedidosStatusRecebido = new ArrayList<>();
 
@@ -28,43 +27,44 @@ public class CozinhaService {
                 pedidosStatusRecebido.add(pedido);
             }
         }
+
         return pedidosStatusRecebido;
     }
 
-    public Pedido iniciarPreparo(int pedidoId){
-
+    public Pedido iniciarPreparo(int pedidoId) {
         Pedido pedido = pedidoRepository.buscarPorId(pedidoId);
 
-        if (pedido == null || pedido.getStatusPreparo() != StatusPreparoPedido.RECEBIDO){
+        if (pedido == null || pedido.getStatusPreparo() != StatusPreparoPedido.RECEBIDO) {
             return null;
         }
 
+        pedidoRepository.atualizarStatusPreparo(pedidoId, StatusPreparoPedido.EM_PREPARO);
         pedido.setStatusPreparo(StatusPreparoPedido.EM_PREPARO);
 
         return pedido;
     }
 
-    public Pedido marcarPronto(int pedidoId){
-
+    public Pedido marcarPronto(int pedidoId) {
         Pedido pedido = pedidoRepository.buscarPorId(pedidoId);
 
-        if (pedido == null || pedido.getStatusPreparo() != StatusPreparoPedido.EM_PREPARO){
+        if (pedido == null || pedido.getStatusPreparo() != StatusPreparoPedido.EM_PREPARO) {
             return null;
         }
 
+        pedidoRepository.atualizarStatusPreparo(pedidoId, StatusPreparoPedido.PRONTO);
         pedido.setStatusPreparo(StatusPreparoPedido.PRONTO);
 
         return pedido;
     }
 
-    public Pedido marcarEntregue(int pedidoId){
-
+    public Pedido marcarEntregue(int pedidoId) {
         Pedido pedido = pedidoRepository.buscarPorId(pedidoId);
 
-        if (pedido == null || pedido.getStatusPreparo() != StatusPreparoPedido.PRONTO){
+        if (pedido == null || pedido.getStatusPreparo() != StatusPreparoPedido.PRONTO) {
             return null;
         }
 
+        pedidoRepository.atualizarStatusPreparo(pedidoId, StatusPreparoPedido.ENTREGUE);
         pedido.setStatusPreparo(StatusPreparoPedido.ENTREGUE);
 
         return pedido;

@@ -13,6 +13,7 @@ public class AutService {
 
     public Usuario autenticar(String usuario, String senha) {
         Usuario usuarioEncontrado = usuarioRepository.buscarPorUsuario(usuario);
+
         if (usuarioEncontrado == null) {
             return null;
         }
